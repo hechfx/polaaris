@@ -1,4 +1,4 @@
-const { execFile, spawn } = require('node:child_process');
+const { execFile, spawn, exec } = require('node:child_process');
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
@@ -265,7 +265,11 @@ module.exports = class API {
         delay.on("exit", () => {
             let launch = execFile(LEGENDARY.SELF, [LEGENDARY.LAUNCH, req.params.game])
 
-            launch.on("exit", (data) => {
+            launch.stderr.on("data", (data) => {
+                console.log(data)
+            })
+
+            launch.on("exit", () => {
                 res.json({ status: 200 })
             })
         })

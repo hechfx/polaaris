@@ -26,7 +26,7 @@ module.exports = class Electron {
         this.win.setBrowserView(this.view);
         this.view.setBounds({ x: 0, y: 30, width: this.options.width, height: this.options.height - 30 });
         this.view.webContents.loadURL(`http://localhost:${this.api.port}`);
-
+        
         this.registerEvents();
     }
 
