@@ -80,6 +80,7 @@
                 migrate: document.getElementById('migrate')
             };
 
+            toggleLoadingState();
 
             elements.button.addEventListener('click', toggleNavigation);
 
@@ -106,7 +107,6 @@
                     installationPath: elements.newPath.value.replace("\n", "")
                 }
 
-                toggleLoadingState();
 
                 fetch("/api/legendary/config", {
                     method: 'POST',
