@@ -34,9 +34,9 @@
       "icon": "src/static/asset/Polaaris.png"
     }
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["egl", "legendary"],
+  "author": "Volpette Polaaris",
+  "license": "Apache-2.0",
   "dependencies": {
     "body-parser": "^1.20.2",
     "ejs": "^3.1.9",
