@@ -17,7 +17,9 @@ textarea {
     --main-bg-color: #282828;
     --main-font: Arial, sans-serif;
     --gradient-bg: linear-gradient(to right, #da5fff, #6d94fd);
-    --main-shadow: 0 10px 10px #00000080
+    --main-shadow: 0 10px 10px #00000080;
+    --game-width: 200px;
+    --game-height: 250px
 }
 
 html {
@@ -145,14 +147,24 @@ body {
 
 progress {
     width: 100%;
-    height: 20px
+    height: 20px;
+    border-radius: 12px;
+}
+
+progress::-webkit-progress-bar {
+    border-radius: 12px;
+}
+
+progress::-webkit-progress-value {
+    border-radius: 12px;
 }
 
 progress[value] {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 20px
+    height: 20px;
+    border-radius: 12px;
 }
 
 progress[value]d::-webkit-progress-bar {
@@ -410,8 +422,8 @@ input:checked+.slider:before {
 
 .game-list {
     display: grid;
-    grid-template-columns: repeat(4, 150px);
-    grid-template-rows: repeat(4, 200px);
+    grid-template-columns: repeat(4, var(--game-width));
+    grid-template-rows: repeat(4, var(--game-height));
     justify-content: center;
     gap: 10px
 }
@@ -419,6 +431,7 @@ input:checked+.slider:before {
 .game-list.list-view {
     display: flex;
     flex-direction: column;
+    will-change: transform;
     grid-template-columns: repeat(1, 1fr)
 }
 
@@ -428,6 +441,7 @@ input:checked+.slider:before {
     background-color: #333;
     border-radius: 6px;
     display: inline-flex;
+    will-change: transform;
     flex: 1 0 auto;
     overflow: hidden
 }
@@ -443,9 +457,8 @@ input:checked+.slider:before {
     transform: none;
     transition: none;
     margin: auto;
+    will-change: transform;
     border-radius: 3px;
-    -webkit-mask-image: linear-gradient(to right, black 50%, #333f 50%, #333333e6 60%, #333c 70%, #333333b3 80%, #3339 90%, #33333380 100%);
-    mask-image: linear-gradient(to right, black 50%, #333f 50%, #333333e6 60%, #333c 70%, #333333b3 80%, #3339 90%, #33333380 100%)
 }
 
 .tools {
@@ -547,6 +560,7 @@ input:checked+.slider:before {
     opacity: 1;
     flex-direction: row;
     justify-content: space-between;
+    will-change: transform;
     height: 150px
 }
 
@@ -562,15 +576,16 @@ input:checked+.slider:before {
 .game {
     position: relative;
     overflow: hidden;
-    width: 150px;
-    height: 200px
+    width: var(--game-width);
+    height: var(--game-height)
 }
 
 .game img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform .5s
+    transition: transform .5s;
+    will-change: transform;
 }
 
 .game:hover img {
@@ -617,7 +632,12 @@ input:checked+.slider:before {
 .game-list.list-view .uninstall-button,
 .game-list.list-view .open-location-button,
 .game-list.list-view .cancel-button {
-    margin-top: 10px
+    margin-top: 10px;
+    border-radius: 12px;
+}
+
+.cancel-button {
+    border-radius: 12px;
 }
 
 .install-button:hover,

@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const ini = require("ini");
 const find = require('find-process');
 const kill = require('tree-kill');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const cors = require("cors")
 
 const LEGENDARY = {
     SELF: "legendary",
@@ -31,24 +33,25 @@ let progress = 0;
 let game = "game";
 let downloading = false;
 let ETA = "00:00:00";
+let downloadSpd = 0;
 
 module.exports = class API {
     constructor(port) {
         this.port = port;
         this.app = express();
 
-        this.app.use((req, res, next) => {
-            if (req.headers['user-agent'].includes('Electron')) {
-                next();
-            } else {
-                res.status(403).send('Access Denied');
-            }
-        });
+        this.app.use(cors())
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
+        this.app.use("/pt-BR", createProxyMiddleware("/pt-BR",{
+            target: "http://store.epicgames.com",
+            changeOrigin: true,
+            secure: false
+        }));
+        this.app.use("/static", express.static(path.join(__dirname, "../static")));
+
         this.app.set("view engine", "ejs");
         this.app.set("views", path.join(__dirname, "../view"));
-        this.app.use("/static", express.static(path.join(__dirname, "../static")));
 
         this.app.post("/api/legendary/migrate", this.migrateGames.bind(this));
         this.app.post("/api/legendary/config", this.saveConfig.bind(this));
@@ -230,15 +233,20 @@ module.exports = class API {
 
         if (downloading === false) {
             child.stderr.on("data", (data) => {
-                const match = data.toString().match(/Progress: (\d+\.\d+)%/);
-                const match2 = data.toString().match(/ETA: (\d{2}:\d{2}:\d{2})/)
-                if (match) {
-                    progress = parseFloat(match[1])
-                    game = req.params.game
-                    downloading = true;
+                let information = data.toString()
 
-                    if (match2[1]) {
-                        ETA = match2[1]
+                const getProgress = information.match(/Progress: (\d+\.\d+)%/);
+                const getETA = information.match(/ETA: (\d{2}:\d{2}:\d{2})/);
+                const getDownloadInfo = information.match(/(\d+\.\d+)/g);
+                
+                if (getProgress) {
+                    progress = parseFloat(getProgress[1]);
+                    game = req.params.game;
+                    downloading = true;
+                    console.log(getDownloadInfo)
+
+                    if (getETA) {
+                        ETA = getETA[1]
                     }
                 }
             })
@@ -258,20 +266,31 @@ module.exports = class API {
         switch (req.params.game) {
             case "grand theft auto v" || "red dead redemption" || "red dead redemption 2":
                 exec("start /B \"null\" \"C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe\"")
+                let delay = exec("ping -n 15 localhost > nul")
+
+                delay.on("exit", () => {
+                    let launch = execFile(LEGENDARY.SELF, [LEGENDARY.LAUNCH, req.params.game])
+
+                    launch.stderr.on("data", (data) => {
+                        console.log(data)
+                    })
+
+                    launch.on("exit", () => {
+                        res.json({ status: 200 })
+                    })
+                })
+                break;
         }
 
-        let delay = exec("ping -n 15 localhost > nul")
 
-        delay.on("exit", () => {
-            let launch = execFile(LEGENDARY.SELF, [LEGENDARY.LAUNCH, req.params.game])
+        let launch = execFile(LEGENDARY.SELF, [LEGENDARY.LAUNCH, req.params.game])
 
-            launch.stderr.on("data", (data) => {
-                console.log(data)
-            })
+        launch.stderr.on("data", (data) => {
+            console.log(data)
+        })
 
-            launch.on("exit", () => {
-                res.json({ status: 200 })
-            })
+        launch.on("exit", () => {
+            res.json({ status: 200 })
         })
     }
 
@@ -360,7 +379,7 @@ module.exports = class API {
         });
 
         this.app.get("/account/downloads", (req, res) => {
-            res.json({ progress, game, downloading, ETA })
+            res.json({ progress, game, downloading, ETA, downloadSpd })
         })
 
         this.app.get("/account", (req, res) => {

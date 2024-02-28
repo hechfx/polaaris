@@ -78,6 +78,7 @@
 <body>
     <div id="title-bar">
         <div id="title" style="font-family: 'Akira';">POLAARIS</div>
+        <button id="back"><</button>
         <div id="title-bar-btns">
             <button id="min-btn">🗕</button>
             <button id="max-btn">□</button>
@@ -91,8 +92,13 @@
         const elements = {
             minBtn: document.getElementById('min-btn'),
             maxBtn: document.getElementById('max-btn'),
-            closeBtn: document.getElementById('close-btn')
+            closeBtn: document.getElementById('close-btn'),
+            title: document.getElementById("back")
         };
+
+        elements.title.addEventListener("click", () => {
+            api.send("back-to-polaaris")
+        })
 
         elements.minBtn.addEventListener('click', () => {
             api.send('minimize')

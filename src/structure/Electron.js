@@ -1,4 +1,4 @@
-const { app, BrowserWindow, BrowserView, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, BrowserView, ipcMain, shell, session } = require("electron");
 
 module.exports = class Electron {
     constructor(options = {}, api) {
@@ -9,6 +9,7 @@ module.exports = class Electron {
     }
 
     start() {
+        app.disableHardwareAcceleration()
         app.on("ready", this.createWindow.bind(this));
     }
 
@@ -26,7 +27,7 @@ module.exports = class Electron {
         this.win.setBrowserView(this.view);
         this.view.setBounds({ x: 0, y: 30, width: this.options.width, height: this.options.height - 30 });
         this.view.webContents.loadURL(`http://localhost:${this.api.port}`);
-        
+        this.view.webContents.session.clearCache();
         this.registerEvents();
     }
 
@@ -35,6 +36,11 @@ module.exports = class Electron {
             const result = await shell.showItemInFolder(path);
             event.reply("open-path-result", result);
         });
+
+        ipcMain.on("back-to-polaaris", () => {
+            console.log("back-to-polaaris")
+            this.view.webContents.loadURL(`http://localhost:${this.api.port}`);
+        })
 
         ipcMain.on("minimize", () => this.win.minimize());
 
