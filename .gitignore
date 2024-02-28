@@ -1,0 +1,4 @@
+node_modules/
+dist/
+legendary.exe
+package-lock.json

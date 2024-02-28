@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        @font-face {
+            font-family: "Akira";
+            src: url("./static/asset/AkiraExpanded.otf");
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+        }
+
+        #title-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            align-items: center;
+            width: 100%;
+            height: 30px;
+            /* Ajuste este valor conforme necessário */
+            background: #333333;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 10px;
+            -webkit-app-region: drag;
+        }
+
+        #title-bar #title {
+            font-family: 'Akira';
+            color: rgba(255, 255, 255, 0.7);
+            width: 85%;
+        }
+
+        #title-bar button {
+            -webkit-app-region: no-drag;
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: #333333;
+            color: white;
+            font-size: 1.2em;
+            padding: 0;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        #title-bar button i {
+            line-height: 30px;
+        }
+
+        #title-bar button:hover {
+            background: #666;
+        }
+
+        #title-bar button:active {
+            background: #888;
+        }
+
+        #title-bar #close-btn:hover {
+            background-color: #ff5f56;
+        }
+
+        #title-bar-btns {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="title-bar">
+        <div id="title" style="font-family: 'Akira';">POLAARIS</div>
+        <div id="title-bar-btns">
+            <button id="min-btn">🗕</button>
+            <button id="max-btn">□</button>
+            <button id="close-btn">✕</button>
+        </div>
+    </div>
+</body>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const elements = {
+            minBtn: document.getElementById('min-btn'),
+            maxBtn: document.getElementById('max-btn'),
+            closeBtn: document.getElementById('close-btn')
+        };
+
+        elements.minBtn.addEventListener('click', () => {
+            api.send('minimize')
+        });
+
+        elements.maxBtn.addEventListener('click', () => {
+            api.send('maximize')
+        });
+
+        elements.closeBtn.addEventListener('click', () => {
+            api.send('close')
+        });
+    });
+</script>
+
+</html>

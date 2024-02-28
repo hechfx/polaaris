@@ -1,0 +1,54 @@
+{
+  "name": "Polaaris",
+  "version": "1.0.0",
+  "description": "POLAARIS GUI for Legendary Epic Games Launcher",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "me.volpette.polaaris",
+    "productName": "POLAARIS",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*"
+    ],
+    "extraFiles": [
+      "legendary.exe"
+    ],
+    "extraResources": [
+      {
+        "from": "src/static/asset",
+        "to": "assets"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "src/assets/icon.icns"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "src/static/asset/Polaaris.png"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "find-process": "^1.4.7",
+    "ini": "^4.1.1",
+    "jquery": "^3.7.1",
+    "tree-kill": "^1.2.2",
+    "windows-shortcuts": "^0.1.6"
+  },
+  "devDependencies": {
+    "electron": "^29.0.1",
+    "electron-builder": "^24.12.0"
+  }
+}

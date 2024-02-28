@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./static/css/style.css">
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+    <div id="loadingBackground" class="active"></div>
+    <main class="container">
+        <header id="header">
+            <div id="header-text">POLAARIS</div>
+        </header>
+
+        <section class="ghost">
+            <img class="avatar" width="128" height="128" src="/static/asset/Polaaris.png" alt="Polaaris">
+        </section>
+
+        <section class="content">
+            <div class="slogan-box">
+                <h2>POLAARIS é um aplicativo visual para o Legendary, um launcher alternativo ao da Epic Games!</h2>
+            </div>
+
+            <button id="login" class="fancy-button">Entre com Epic Games</button>
+        </section>
+
+        <footer>Powered by volpete polares</footer>
+    </main>
+    <script>
+        const elements = {
+            loading: document.getElementById('loading'),
+            loadingBackground: document.getElementById('loadingBackground'),
+            login: document.getElementById('login')
+        };
+
+        window.onload = () => {
+            elements.loading.classList.toggle('active');
+            elements.loadingBackground.classList.toggle('active');
+        }
+
+        elements.login.addEventListener('click', function () {
+            fetch('/api/epic/auth', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    window.location.href = data.status === 200 ? "/account" : "/";
+                })
+                .catch(console.error);
+        });
+    </script>
+</body>
+
+</html>

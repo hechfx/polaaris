@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Polaaris</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+
+<body>
+    <div id="modal">
+        <div class="modal-content">
+            <h2 id="gameName"></h2>
+            <p id="downloadStatus"></p>
+            <p id="eta"></p>
+            <progress id="downloadProgress" value="0" max="100"></progress>
+        </div>
+    </div>
+    <div id="loading"></div>
+    <div id="loadingBackground"></div>
+    <main class="container">
+        <header id="header">
+            <button id="hamburguer">☰</button>
+            <div id="header-text">Biblioteca</div>
+            <label class="gameswitch">
+                <input type="checkbox" id="game-switch">
+                <span class="slider round"></span>
+            </label>
+        </header>
+
+        <section class="content">
+            <div class="slogan-box">
+                <h1 id="game-stats"><span id="all-games" class="active">Todos</span> • <span id="installed-games">
+                        Instalados</span></h1>
+            </div>
+
+            <div class="tools">
+                <input type="text" id="searchQuery" placeholder="Nome do Jogo" oninput="search(this.value)">
+            </div>
+
+            <div class="game-list"></div>
+
+            <nav id="navigation">
+                <a href="/account">Conta</a>
+                <a href="/account/games">Biblioteca</a>
+                <a href="/account/settings">Configurações</a>
+                <a class="logout">Logout</a>
+            </nav>
+        </section>
+    </main>
+    <script>
+        function toggleLoadingState() {
+            document.getElementById('loading').classList.toggle('active');
+            document.getElementById('loadingBackground').classList.toggle('active');
+        }
+    
+        window.onload = function () {
+            toggleLoadingState();
+    
+            const elements = {
+                button: document.getElementById('hamburguer'),
+                navigation: document.getElementById('navigation'),
+                gameSwitch: document.getElementById('game-switch'),
+                gameList: document.querySelector('.game-list'),
+                downloadStats: document.getElementById('downloadStatus'),
+                progressBar: document.getElementById('progress-bar'),
+                loading: document.getElementById('loading'),
+                loadingBackground: document.getElementById('loadingBackground'),
+                downloadButton: document.querySelector('.install-button'),
+                all_games: document.getElementById("all-games"),
+                installed_games: document.getElementById("installed-games"),
+                logout: document.querySelector('.logout')
+            };
+    
+            elements.logout.addEventListener('click', function () {
+                fetch('/logout', {
+                    method: 'POST',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 200) {
+                            window.location.href = "/";
+                        } else {
+                            alert(data);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            });
+    
+            let allGames;
+            let installedGames;
+    
+            elements.loading.classList.add('active');
+            elements.loadingBackground.classList.add('active');
+    
+            fetch('/api/account/games', {
+                method: 'POST',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    allGames = JSON.parse(data.allGames[0]);
+    
+                    fetch('/api/account/games/installed', {
+                        method: 'POST',
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            installedGames = JSON.parse(data.installedGames);
+                            updateGameList(allGames, installedGames);
+                            elements.loading.classList.remove('active');
+                            elements.loadingBackground.classList.remove('active');
+                        });
+                });
+    
+            elements.installed_games.addEventListener("click", () => {
+                let containClass = elements.installed_games.classList.contains("active");
+                let otherElementContainClass = elements.all_games.classList.contains("active")
+    
+                if (otherElementContainClass) {
+                    elements.gameList.innerHTML = ""
+                    updateGameList(allGames, installedGames, true)
+                    elements.all_games.classList.remove("active")
+                    elements.installed_games.classList.add("active")
+                }
+            })
+    
+            elements.all_games.addEventListener("click", () => {
+                let containClass = elements.all_games.classList.contains("active");
+                let otherElementContainClass = elements.installed_games.classList.contains("active")
+    
+                if (otherElementContainClass) {
+                    elements.gameList.innerHTML = ""
+                    updateGameList(allGames, installedGames, false)
+                    elements.installed_games.classList.remove("active")
+                    elements.all_games.classList.add("active")
+                }
+            })
+    
+            elements.gameSwitch.addEventListener('change', function () {
+                document.getElementsByClassName("game-list")[0].classList.toggle('list-view');
+            });
+    
+            elements.button.addEventListener('click', function () {
+                const isActive = elements.button.classList.contains('active');
+                elements.button.classList.toggle('active');
+                elements.button.classList.toggle('white');
+                elements.navigation.classList.toggle('show', !isActive);
+            });
+    
+            function startDownload(game) {
+                const gameName = document.getElementById('gameName');
+                const modal = document.getElementById('modal');
+                const modalContent = document.querySelector(".modal-content");
+                const downloadElement = document.getElementById('downloadProgress');
+                const etaElement = document.getElementById("eta");
+    
+                gameName.classList.add('polaaris2');
+                gameName.textContent = game;
+                downloadElement.value = 0;
+    
+                const button = document.createElement("button");
+                button.textContent = "Cancelar";
+                button.id = "cancelDownload";
+                button.className = "cancel-button"
+    
+                modalContent.appendChild(button)
+    
+                button.addEventListener("click", () => {
+                    fetch(`/api/epic/cancel/`, {
+                        method: 'POST',
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 200) {
+                                modal.style.display = 'none';
+                            }
+                        });
+                })
+    
+                modal.style.display = 'block';
+    
+                let downloadProgress = 0;
+    
+                const updateDownloadProgress = setInterval(() => {
+                    fetch('/account/downloads')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.game !== game) return;
+    
+                            console.log(data)
+    
+                            downloadProgress = data.progress;
+    
+    
+                            if (downloadProgress >= 100) {
+                                setTimeout(() => {
+                                    clearInterval(updateDownloadProgress);
+                                }, 4000);
+                                return;
+                            }
+    
+                            downloadProgress += 10;
+                            etaElement.innerText = `Tempo estimado: ${data.ETA}`;
+                            downloadElement.value = downloadProgress;
+                        });
+                }, 1000);
+            }
+    
+            function updateGameList(allGames, installedGames, showInstalled = false) {
+                elements.installed_games.innerText = "Instalados (" + installedGames.length + ")"
+                elements.all_games.innerText = "Todos (" + allGames.length + ")"
+    
+                allGames.forEach((game) => {
+                    const isInstalled = installedGames.some((g) => g.app_name === game.app_name);
+                    if ((showInstalled && !isInstalled) || (!showInstalled && isInstalled)) {
+                        return;
+                    }
+    
+                    const gameItem = document.createElement('div');
+                    gameItem.className = 'game';
+                    const gameInfo = document.createElement('div');
+                    gameInfo.className = 'game-info';
+                    const gameName = document.createElement('p');
+                    gameName.className = 'game-name';
+                    gameName.textContent = game.metadata.title;
+                    const gameCover = document.createElement('img');
+                    gameCover.src = game.metadata.keyImages[1].url;
+                    const gamePlay = document.createElement('button');
+                    gamePlay.id = game.metadata.title.toLowerCase();
+                    gamePlay.className = isInstalled ? 'play-button' : 'install-button';
+                    gamePlay.textContent = isInstalled ? 'Jogar' : 'Instalar';
+    
+                    if (isInstalled) {
+                        const uninstallButton = document.createElement('button');
+                        uninstallButton.id = game.metadata.title.toLowerCase();
+                        uninstallButton.className = 'uninstall-button';
+                        uninstallButton.textContent = 'Desinstalar';
+    
+                        const openLocationButton = document.createElement('button');
+                        openLocationButton.id = game.metadata.title.toLowerCase();
+                        openLocationButton.className = 'open-location-button';
+                        openLocationButton.textContent = 'Abrir Local do Jogo';
+    
+                        gameInfo.append(gameName, gamePlay, openLocationButton, uninstallButton);
+                    } else {
+                        gameInfo.append(gameName, gamePlay);
+                    }
+    
+                    gameItem.append(gameCover, gameInfo);
+                    elements.gameList.append(gameItem);
+                });
+    
+                document.querySelectorAll('.play-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        toggleLoadingState();
+                        const game = e.target.id;
+                        fetch(`/api/epic/launch/${game}`, {
+                            method: 'POST',
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 200) {
+                                    toggleLoadingState();
+                                    alert('Jogo iniciado com sucesso!');
+                                }
+                            });
+                    });
+                });
+    
+                document.querySelectorAll('.install-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const game = e.target.id;
+                        startDownload(game);
+                        fetch(`/api/epic/install/${game}`, {
+                            method: 'POST',
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 200) {
+                                    let timer = 4;
+    
+                                    const interval = setInterval(() => {
+                                        if (timer === 0) {
+                                            clearInterval(interval);
+                                            return;
+                                        }
+    
+                                        timer--;
+                                        elements.downloadStats.textContent = `Jogo baixado com sucesso!\n\nReiniciando em ${timer} segundos...`;
+                                    }, 1000);
+    
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 4000);
+                                }
+                            });
+                    });
+                });
+    
+                document.querySelectorAll('.uninstall-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const game = e.target.id;
+                        document.querySelectorAll('.play-button').forEach(button => button.disabled = true);
+                        document.querySelectorAll('.uninstall-button').forEach(button => button.disabled = true);
+                        fetch(`/api/epic/uninstall/${game}`, {
+                            method: 'POST',
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 200) {
+                                    alert('Jogo desinstalado com sucesso.');
+                                    location.reload();
+                                }
+                            });
+                    });
+                });
+    
+                document.querySelectorAll('.open-location-button').forEach(button => {
+                    button.addEventListener("click", (e) => {
+                        let game = e.target.id;
+    
+                        installedGames.forEach((g) => {
+                            if (g.title.toLowerCase() === game) {
+                                console.log(g.install_path.replace(/\\/g, `\\\\`))
+    
+                                window.api.openPath(`${g.install_path}\\${g.executable}`)
+                            }
+                        });
+                    })
+                })
+            }
+        }
+    
+        function search(query) {
+            let allGames = document.querySelectorAll(".game")
+    
+            allGames.forEach(game => {
+                let info = game.querySelector(".game-info")
+                let name = info.querySelector(".game-name")
+    
+                if (name.textContent.toLowerCase().includes(query.toLowerCase())) {
+                    game.style.display = '';
+                } else {
+                    game.style.display = 'none';
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

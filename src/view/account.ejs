@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Polaaris</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./static/css/style.css">
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+    <div id="loadingBackground" class="active"></div>
+    <main class="container">
+        <header id="header">
+            <button id="hamburguer">☰</button>
+            <div id="header-text">...</div>
+        </header>
+
+        <section class="content">
+            <div class="slogan-box">
+                <h1>Seja bem-vindo ao <span class="polaaris">POLAARIS</span></h1>
+                <p>Para ver seus jogos, clique no <strong>☰</strong> e clique em <i>Biblioteca</i>.</p>
+            </div>
+
+            <nav id="navigation">
+                <a href="/account">Conta</a>
+                <a href="/account/games">Biblioteca</a>
+                <a href="/account/settings">Configurações</a>
+                <a class="logout">Logout</a>
+            </nav>
+        </section>
+    </main>
+    <script>
+        const elements = {
+            name: document.getElementById('header-text'),
+            button: document.getElementById('hamburguer'),
+            navigation: document.getElementById('navigation'),
+            loading: document.getElementById('loading'),
+            loadingBackground: document.getElementById('loadingBackground')
+        };
+
+        document.querySelector('.logout').addEventListener('click', function () {
+            fetch('/logout', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 200) {
+                        window.location.href = "/";
+                    } else {
+                        alert(data);
+                    }
+                })
+                .catch(console.error);
+        });
+
+        fetch('/api/account', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                elements.name.textContent = data.user.account;
+                elements.loading.classList.toggle('active');
+                elements.loadingBackground.classList.toggle('active');
+            })
+            .catch(console.error);
+
+        elements.button.addEventListener('click', function () {
+            const isActive = elements.button.classList.contains('active');
+            elements.button.classList.toggle('active');
+            elements.button.classList.toggle('disabled');
+            elements.button.classList.toggle('black');
+            elements.button.classList.toggle('white');
+            elements.navigation.classList.toggle('show', !isActive);
+        });
+    </script>
+</body>
+
+</html>
