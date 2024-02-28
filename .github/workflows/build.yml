@@ -13,8 +13,10 @@ jobs:
       run: npm install
     - name: build
       run: npm run build
-    - name: Use GH_TOKEN
-      run: echo "Using GH_TOKEN ${{ secrets.GH_TOKEN }}"
+    - name: Build and Publish
+      uses: samuelmeuli/action-electron-builder@v1
+      with:
+          github_token: ${{ secrets.GH_TOKEN }}
 
   build_on_mac:
     runs-on: macos-latest
@@ -27,8 +29,10 @@ jobs:
       run: npm install
     - name: build
       run: npm run build
-    - name: Use GH_TOKEN
-      run: echo "Using GH_TOKEN ${{ secrets.GH_TOKEN }}"
+    - name: Build and Publish
+      uses: samuelmeuli/action-electron-builder@v1
+      with:
+          github_token: ${{ secrets.GH_TOKEN }}
 
   build_on_win:
     runs-on: windows-latest
@@ -41,5 +45,7 @@ jobs:
       run: npm install
     - name: build
       run: npm run build
-    - name: Use GH_TOKEN
-      run: echo "Using GH_TOKEN ${{ secrets.GH_TOKEN }}"
+    - name: Build and Publish
+      uses: samuelmeuli/action-electron-builder@v1
+      with:
+        github_token: ${{ secrets.GH_TOKEN }}
