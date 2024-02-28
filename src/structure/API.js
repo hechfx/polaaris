@@ -42,7 +42,7 @@ module.exports = class API {
     constructor(port) {
         this.port = port;
         this.app = express();
-        this.configString = fs.readFileSync(path.join(__dirname, "/config.ini")).toString()
+        this.configString = fs.readFileSync("./config.ini").toString()
         this.config = ini.parse(this.configString)
 
         this.app.use(cors())
