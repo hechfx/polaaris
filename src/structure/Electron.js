@@ -1,4 +1,4 @@
-const { app, BrowserWindow, BrowserView, ipcMain, shell, session } = require("electron");
+const { app, BrowserWindow, BrowserView, ipcMain, shell } = require("electron");
 
 module.exports = class Electron {
     constructor(options = {}, api) {
@@ -6,6 +6,7 @@ module.exports = class Electron {
         this.win = null;
         this.view = null;
         this.api = api;
+        this.clientId = "1212469859909111818"
     }
 
     start() {
@@ -29,6 +30,8 @@ module.exports = class Electron {
         this.view.webContents.loadURL(`http://localhost:${this.api.port}`);
         this.view.webContents.session.clearCache();
         this.registerEvents();
+
+        
     }
 
     registerEvents() {
@@ -38,7 +41,6 @@ module.exports = class Electron {
         });
 
         ipcMain.on("back-to-polaaris", () => {
-            console.log("back-to-polaaris")
             this.view.webContents.loadURL(`http://localhost:${this.api.port}`);
         })
 

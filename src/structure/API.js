@@ -7,7 +7,9 @@ const ini = require("ini");
 const find = require('find-process');
 const kill = require('tree-kill');
 const { createProxyMiddleware } = require('http-proxy-middleware');
-const cors = require("cors")
+const cors = require("cors");
+const RPC = require('discord-rpc');
+const axios = require("axios")
 
 const LEGENDARY = {
     SELF: "legendary",
@@ -43,7 +45,7 @@ module.exports = class API {
         this.app.use(cors())
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
-        this.app.use("/pt-BR", createProxyMiddleware("/pt-BR",{
+        this.app.use("/pt-BR", createProxyMiddleware("/pt-BR", {
             target: "http://store.epicgames.com",
             changeOrigin: true,
             secure: false
@@ -62,9 +64,62 @@ module.exports = class API {
         this.app.post("/api/account/games/installed", this.getInstalledGames.bind(this));
         this.app.post("/api/account/games", this.getAllGames.bind(this));
         this.app.post("/api/account", this.getAccount.bind(this));
+        this.client = new RPC.Client({ transport: "ipc" });
+        this.clientId = "1212469859909111818"
     }
 
-    listen() {
+    listenRpc() {
+        console.log(this.currentUrl)
+
+        this.app.use((req, res, next) => {
+            let currentlyOn = req.originalUrl
+            let name = "Inativo";
+            let status = "Inativo";
+
+            switch (currentlyOn) {
+                case "/":
+                    name = "Home";
+                    break;
+                case "/account":
+                    name = "Informações da Conta";
+                    break;
+                case "/account/games":
+                    name = "Biblioteca";
+                    break;
+                case "/account/settings":
+                    name = "Configurações";
+                    break;
+            }
+
+            if (game === "game") {
+                status = "Inativo"
+            } else {
+                name = `${game.toUpperCase()}`
+                status = `${progress}% - ${ETA}`
+            }
+
+            this.client.on("ready", () => {
+                this.client.request("SET_ACTIVITY", {
+                    pid: process.pid,
+                    activity: {
+                        details: name,
+                        state: status,
+                        assets: {
+                            large_image: "polaaris",
+                            large_text: "Polaaris",
+                        }
+                    }
+                })
+            })
+
+            this.client.login({ clientId: this.clientId }).catch(console.error);
+            next()
+        })
+    }
+
+    async listen() {
+        this.listenRpc()
+
         this.load();
 
         this.app.listen(this.port, () => {
@@ -238,12 +293,11 @@ module.exports = class API {
                 const getProgress = information.match(/Progress: (\d+\.\d+)%/);
                 const getETA = information.match(/ETA: (\d{2}:\d{2}:\d{2})/);
                 const getDownloadInfo = information.match(/(\d+\.\d+)/g);
-                
+
                 if (getProgress) {
                     progress = parseFloat(getProgress[1]);
                     game = req.params.game;
                     downloading = true;
-                    console.log(getDownloadInfo)
 
                     if (getETA) {
                         ETA = getETA[1]
