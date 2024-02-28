@@ -2,22 +2,6 @@ name: Build
 on: [push, pull_request]
 
 jobs:
-  build_on_linux:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@master
-      with:
-        node-version: 20
-    - name: install dependencies
-      run: npm install
-    - name: Fix permissions
-      run: chmod +x node_modules/app-builder-bin/linux/x64/app-builder
-    - name: Build and Publish
-      uses: samuelmeuli/action-electron-builder@v1
-      with:
-          github_token: ${{ secrets.GH_TOKEN }}
-
   build_on_mac:
     runs-on: macos-latest
     steps:
