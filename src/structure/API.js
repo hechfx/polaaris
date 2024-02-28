@@ -113,10 +113,10 @@ module.exports = class API {
             
             if (this.config.polaaris.discord_rpc) {
                 this.client.login({ clientId: this.clientId }).catch(console.error);
+                next()
             } else {
-                return;
+                next()
             }
-            next()
         })
     }
 
