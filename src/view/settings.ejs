@@ -64,86 +64,88 @@
         </nav>
     </main>
     <script>
+        const elements = {
+            button: document.getElementById('hamburguer'),
+            navigation: document.getElementById('navigation'),
+            save: document.getElementById('save'),
+            loading: document.getElementById('loading'),
+            loadingBackground: document.getElementById('loadingBackground'),
+            disableUpdateCheck: document.getElementById('disable-update-check'),
+            disableUpdateNotice: document.getElementById('disable-update-notice'),
+            newPath: document.getElementById('newPath'),
+            status: document.getElementById('status'),
+            migrate: document.getElementById('migrate')
+        };
+
         toggleLoadingState();
 
         window.onload = function () {
-            const elements = {
-                button: document.getElementById('hamburguer'),
-                navigation: document.getElementById('navigation'),
-                save: document.getElementById('save'),
-                loading: document.getElementById('loading'),
-                loadingBackground: document.getElementById('loadingBackground'),
-                disableUpdateCheck: document.getElementById('disable-update-check'),
-                disableUpdateNotice: document.getElementById('disable-update-notice'),
-                newPath: document.getElementById('newPath'),
-                status: document.getElementById('status'),
-                migrate: document.getElementById('migrate')
-            };
-
             toggleLoadingState();
             elements.button.addEventListener('click', toggleNavigation);
 
             elements.save.addEventListener("click", saveSettings);
 
             elements.migrate.addEventListener("click", migrateGames);
+        }
 
-            function toggleLoadingState() {
-                elements.loading.classList.toggle('active');
-                elements.loadingBackground.classList.toggle('active');
+        function toggleLoadingState() {
+            elements.loading.classList.toggle('active');
+            elements.loadingBackground.classList.toggle('active');
+        }
+
+        function toggleNavigation() {
+            const isActive = elements.button.classList.contains('active');
+            elements.button.classList.toggle('active');
+            elements.button.classList.toggle('white');
+            elements.navigation.classList.toggle('show', !isActive);
+        }
+
+        function saveSettings() {
+            const data = {
+                disableUpdateCheck: elements.disableUpdateCheck.checked,
+                disableUpdateNotice: elements.disableUpdateNotice.checked,
+                installationPath: elements.newPath.value.replace("\n", "")
             }
 
-            function toggleNavigation() {
-                const isActive = elements.button.classList.contains('active');
-                elements.button.classList.toggle('active');
-                elements.button.classList.toggle('white');
-                elements.navigation.classList.toggle('show', !isActive);
-            }
 
-            function saveSettings() {
-                const data = {
-                    disableUpdateCheck: elements.disableUpdateCheck.checked,
-                    disableUpdateNotice: elements.disableUpdateNotice.checked,
-                    installationPath: elements.newPath.value.replace("\n", "")
-                }
-
-
-                fetch("/api/legendary/config", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
+            fetch("/api/legendary/config", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    elements.status.style.color = "lightgreen";
+                    elements.status.innerText = "Configurações Salvas";
+                    toggleLoadingState();
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        elements.status.style.color = "lightgreen";
-                        elements.status.innerText = "Configurações Salvas";
+                .catch(error => {
+                    elements.status.style.color = "red";
+                    elements.status.innerText = "Erro ao Salvar Configurações";
+                })
+        }
+
+        function migrateGames() {
+            toggleLoadingState();
+            fetch("/api/legendary/migrate", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 200) {
+                        alert("Jogo Migrado com Sucesso");
                         toggleLoadingState();
-                    })
-                    .catch(error => {
-                        elements.status.style.color = "red";
-                        elements.status.innerText = "Erro ao Salvar Configurações";
-                    })
-            }
-
-            function migrateGames() {
-                fetch("/api/legendary/migrate", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                        window.location.reload()
+                    }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 200) {
-                            alert("Jogo Migrado com Sucesso");
-                            window.location.reload()
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
-            }
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
     </script>
 </body>
