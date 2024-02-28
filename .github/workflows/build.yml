@@ -11,6 +11,8 @@ jobs:
         node-version: 20
     - name: install dependencies
       run: npm install
+    - name: Fix permissions
+      run: chmod +x node_modules/app-builder-bin/linux/x64/app-builder
     - name: Build and Publish
       uses: samuelmeuli/action-electron-builder@v1
       with:
