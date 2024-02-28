@@ -36,11 +36,14 @@ let game = "game";
 let downloading = false;
 let ETA = "00:00:00";
 let downloadSpd = 0;
+let currentUser = "placeholder"
 
 module.exports = class API {
     constructor(port) {
         this.port = port;
         this.app = express();
+        this.configString = fs.readFileSync(path.join(__dirname, "/config.ini")).toString()
+        this.config = ini.parse(this.configString)
 
         this.app.use(cors())
         this.app.use(bodyParser.json());
@@ -69,8 +72,6 @@ module.exports = class API {
     }
 
     listenRpc() {
-        console.log(this.currentUrl)
-
         this.app.use((req, res, next) => {
             let currentlyOn = req.originalUrl
             let name = "Inativo";
@@ -98,26 +99,28 @@ module.exports = class API {
                 status = `${progress}% - ${ETA}`
             }
 
-            this.client.on("ready", () => {
-                this.client.request("SET_ACTIVITY", {
-                    pid: process.pid,
-                    activity: {
-                        details: name,
-                        state: status,
-                        assets: {
-                            large_image: "polaaris",
-                            large_text: "Polaaris",
-                        }
+            this.client.request("SET_ACTIVITY", {
+                pid: process.pid,
+                activity: {
+                    details: name,
+                    state: status,
+                    assets: {
+                        large_image: "polaaris",
+                        large_text: "Polaaris",
                     }
-                })
+                }
             })
-
-            this.client.login({ clientId: this.clientId }).catch(console.error);
+            
+            if (this.config.polaaris.discord_rpc) {
+                this.client.login({ clientId: this.clientId }).catch(console.error);
+            } else {
+                return;
+            }
             next()
         })
     }
 
-    async listen() {
+    listen() {
         this.listenRpc()
 
         this.load();
@@ -389,13 +392,16 @@ module.exports = class API {
     }
 
     getAccount(req, res) {
-        execFile(LEGENDARY.SELF, [LEGENDARY.STATUS, LEGENDARY.JSON_OPTION], (error, stdout, stderr) => {
-            if (error) {
-                res.send(error);
-                return;
-            }
+        let child = execFile(LEGENDARY.SELF, [LEGENDARY.STATUS, LEGENDARY.JSON_OPTION])
 
-            res.json({ log: stderr, user: JSON.parse(stdout) })
+        child.on("error", () => {
+            res.json({ status: 404 })
+        })
+
+        child.stdout.on("data", (data) => {
+            currentUser = JSON.parse(data.toString())
+
+            res.json({ log: data.toString(), user: JSON.parse(data.toString()) })
         })
     }
 

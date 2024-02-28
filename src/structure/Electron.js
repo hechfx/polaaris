@@ -30,8 +30,6 @@ module.exports = class Electron {
         this.view.webContents.loadURL(`http://localhost:${this.api.port}`);
         this.view.webContents.session.clearCache();
         this.registerEvents();
-
-        
     }
 
     registerEvents() {

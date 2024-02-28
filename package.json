@@ -17,7 +17,8 @@
       "src/**/*"
     ],
     "extraFiles": [
-      "legendary.exe"
+      "legendary.exe",
+      "config.ini"
     ],
     "extraResources": [
       {
