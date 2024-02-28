@@ -44,7 +44,7 @@ Contributions are always welcome! Feel free to open an issue or submit a pull re
 
 ## Betatesters
 
-Thanks to [[pep287](https://github.com/pep287)] for testing the launcher in beta versions.
+Thanks to [[pep287](https://github.com/pep287)] and [[feesti](https://github.com/feesti)] for testing the launcher in beta versions.
 
 ## License
 
