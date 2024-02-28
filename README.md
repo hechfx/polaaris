@@ -12,29 +12,29 @@ To initialize the project, follow the steps below:
 
 1. Clone the repository to your local system using the `git clone` command.
 
-\`\`\`bash
+```bash
 git clone <repository-url>
-\`\`\`
+```
 
 2. Navigate to the project directory.
 
-\`\`\`bash
+```bash
 cd <directory-name>
-\`\`\`
+```
 
 3. Install the project dependencies.
 
-\`\`\`bash
+```bash
 npm install
-\`\`\`
+```
 
 ## Build
 
 To build the project, run the following command:
 
-\`\`\`bash
+```bash
 npm run build
-\`\`\`
+```
 
 This will generate the necessary build files to run the application.
 
