@@ -64,6 +64,8 @@
         </nav>
     </main>
     <script>
+        toggleLoadingState();
+
         window.onload = function () {
             const elements = {
                 button: document.getElementById('hamburguer'),
@@ -78,7 +80,6 @@
                 migrate: document.getElementById('migrate')
             };
 
-            toggleLoadingState();
 
             elements.button.addEventListener('click', toggleNavigation);
 
