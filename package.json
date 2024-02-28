@@ -1,6 +1,6 @@
 {
   "name": "Polaaris",
-  "version": "1.0.2",
+  "version": "1.0.11",
   "description": "POLAARIS GUI for Legendary Epic Games Launcher",
   "main": "src/index.js",
   "scripts": {
