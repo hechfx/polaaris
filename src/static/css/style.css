@@ -665,6 +665,8 @@ button:disabled {
     padding: 12px;
     border-radius: 12px;
     border: none;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 8px #0003
+    box-shadow: 0 4px 8px #0003;
+    margin: 0 auto;
+    align-items: center;
+    
 }

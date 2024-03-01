@@ -8,6 +8,8 @@ const electron = new Electron({
     title: "Polaaris",
     frame: false,
     icon: "./src/static/asset/Polaaris.png",
+    minWidth: 800,
+    minHeight: 600,
     webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,

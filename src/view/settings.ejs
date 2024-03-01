@@ -5,22 +5,27 @@
 <head>
     <title>Polaaris</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/settings.css">
 </head>
 
 <body>
     <div id="loading"></div>
     <div id="loadingBackground"></div>
-    <main class="container">
-        <header id="header">
-            <button id="hamburguer">☰</button>
-            <div id="header-text">Configurações</div>
-        </header>
-        <section class="content">
-            <div class="slogan-box">
-                <h1>Edite suas Configurações Aqui</h1>
+    <div class="container">
+        <div class="header">
+            <div class="header-constant">
+                <img id="header-icon" src="../static/asset/Polaaris.png" alt="Polaaris">
             </div>
-
+            <vr></vr>
+            <div class="links">
+                <a href="/account">Início</a>
+                <a href="/account/games">Biblioteca</a>
+                <a href="/account/settings">Configurações</a>
+                <a href="/pt-BR">Epic Games Store</a>
+            </div>
+            <a class="logout">Sair</a>
+        </div>
+        <div class="content">
             <span id="status"></span>
 
             <div class="settings">
@@ -40,119 +45,26 @@
                 </div>
                 <div class="setting">
                     <p><strong>Migrar Jogo já Instalado no Epic Games Launcher</strong></p>
-                    <button id="migrate" class="fancy-button">Migrar</button>
                     <p style="font-size:12px"><strong>ATENÇÃO</strong>:<i>Este botão fará com que o Polaaris fique
-                            síncrono com o Epic Games Launcher (EGL) e mova seus jogos, ou seja, só vai funcionar se
-                            você estiver com o EGL instalado.</i></p>
+                        síncrono com o Epic Games Launcher (EGL) e mova seus jogos, ou seja, só vai funcionar se
+                        você estiver com o EGL instalado.</i></p>
+                    <button id="migrate" class="fancy-button">Migrar</button>
                 </div>
                 <div class="setting">
                     <p><strong>Caminho de Instalação</strong>
                     <p id="currentPath"><i>
                             <%= installationPath %>
-                        </i></p><textarea id="newPath" placeholder="C:\Insira\O\Caminho\Aqui"></textarea>
+                        </i></p><input id="newPath" placeholder="C:\Insira\O\Caminho\Aqui"></textarea>
                     </p>
 
                 </div>
 
                 <button id="save" class="fancy-button">Salvar</button>
-        </section>
-        <nav id="navigation">
-            <a href="/account">Conta</a>
-            <a href="/account/games">Biblioteca</a>
-            <a href="/account/settings">Configurações</a>
-            <a href="/pt-BR">Epic Games Store</a>
-            <a class="logout">Logout</a>
-        </nav>
-    </main>
-    <script>
-        const elements = {
-            button: document.getElementById('hamburguer'),
-            navigation: document.getElementById('navigation'),
-            save: document.getElementById('save'),
-            loading: document.getElementById('loading'),
-            loadingBackground: document.getElementById('loadingBackground'),
-            disableUpdateCheck: document.getElementById('disable-update-check'),
-            disableUpdateNotice: document.getElementById('disable-update-notice'),
-            newPath: document.getElementById('newPath'),
-            status: document.getElementById('status'),
-            migrate: document.getElementById('migrate')
-        };
-
-        toggleLoadingState();
-
-        window.onload = function () {
-            toggleLoadingState();
-            elements.button.addEventListener('click', toggleNavigation);
-
-            elements.save.addEventListener("click", saveSettings);
-
-            elements.migrate.addEventListener("click", migrateGames);
-        }
-
-        function toggleLoadingState() {
-            elements.loading.classList.toggle('active');
-            elements.loadingBackground.classList.toggle('active');
-        }
-
-        function toggleNavigation() {
-            const isActive = elements.button.classList.contains('active');
-            elements.button.classList.toggle('active');
-            elements.button.classList.toggle('white');
-            elements.navigation.classList.toggle('show', !isActive);
-        }
-
-        function saveSettings() {
-            const data = {
-                disableUpdateCheck: elements.disableUpdateCheck.checked,
-                disableUpdateNotice: elements.disableUpdateNotice.checked,
-                installationPath: elements.newPath.value.replace("\n", "")
-            }
-
-            toggleLoadingState();
-
-            fetch("/api/legendary/config", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    elements.status.style.color = "lightgreen";
-                    elements.status.innerText = "Configurações Salvas";
-                    toggleLoadingState();
-                    window.location.reload()
-                })
-                .catch(error => {
-                    elements.status.style.color = "red";
-                    elements.status.innerText = "Erro ao Salvar Configurações";
-                    toggleLoadingState();
-                    window.location.reload()
-                })
-        }
-
-        function migrateGames() {
-            toggleLoadingState();
-            fetch("/api/legendary/migrate", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 200) {
-                        alert("Jogo Migrado com Sucesso");
-                        toggleLoadingState();
-                        window.location.reload()
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-    </script>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="../static/js/settings.js"></script>
 </body>
 
 </html>

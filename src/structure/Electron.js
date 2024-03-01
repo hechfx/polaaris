@@ -24,19 +24,18 @@ module.exports = class Electron {
             }
         });
 
+        this.view.webContents.session.clearCache();
         this.win.loadFile("./src/index.html");
         this.win.setBrowserView(this.view);
         this.view.setBounds({ x: 0, y: 30, width: this.options.width, height: this.options.height - 30 });
         this.view.webContents.loadURL(`http://localhost:${this.api.port}`);
-        this.view.webContents.session.clearCache();
         this.registerEvents();
     }
 
     registerEvents() {
-        ipcMain.on("open-path", async (event, path) => {
-            const result = await shell.showItemInFolder(path);
-            event.reply("open-path-result", result);
-        });
+        ipcMain.on("open-path", (path) => {
+            shell.openPath(path);
+        })
 
         ipcMain.on("back-to-polaaris", () => {
             this.view.webContents.loadURL(`http://localhost:${this.api.port}`);
@@ -45,6 +44,7 @@ module.exports = class Electron {
         ipcMain.on("minimize", () => this.win.minimize());
 
         ipcMain.on("maximize", () => {
+            console.log("maximize")
             if (this.win.isMaximized()) {
                 this.win.unmaximize();
             } else {

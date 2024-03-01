@@ -3,100 +3,100 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
     <style>
         @font-face {
             font-family: "Akira";
             src: url("./static/asset/AkiraExpanded.otf");
         }
 
-        body,
-        html {
+        body {
             margin: 0;
             padding: 0;
         }
 
-        #title-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            align-items: center;
+        .frame {
             width: 100%;
             height: 30px;
-            /* Ajuste este valor conforme necessário */
-            background: #333333;
-            color: white;
+            background: linear-gradient(to right, #c06ee6, #6ca0e4);
+            position: fixed;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            color: #fff;
+            -webkit-app-region: drag;
+            box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.75);
+            box-sizing: border-box;
+        }
+
+        .frame .buttons {
+            display: flex;
+        }
+
+        .frame .button {
+            width: 32px;
+            height: 32px;
+            margin-left: 5px;
+            -webkit-app-region: no-drag;
+            background-color: transparent;
             display: flex;
             align-items: center;
-            justify-content: space-around;
-            padding: 0 10px;
-            -webkit-app-region: drag;
-        }
-
-        #title-bar #title {
-            font-family: 'Akira';
-            color: rgba(255, 255, 255, 0.7);
-            width: 85%;
-        }
-
-        #title-bar button {
-            -webkit-app-region: no-drag;
-            width: 30px;
-            height: 30px;
+            justify-content: center;
+            transition: background-color 0.2s ease;
             border: none;
-            background: #333333;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .frame .button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .frame .button:active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .frame .button.close {
             color: white;
-            font-size: 1.2em;
-            padding: 0;
-            text-align: center;
-            transition: background 0.2s;
         }
 
-        #title-bar button i {
-            line-height: 30px;
+        .frame .button.close {
+            color: white;
         }
 
-        #title-bar button:hover {
-            background: #666;
+        .frame .button.minimize {
+            color: white;
         }
 
-        #title-bar button:active {
-            background: #888;
-        }
-
-        #title-bar #close-btn:hover {
-            background-color: #ff5f56;
-        }
-
-        #title-bar-btns {
-            display: flex;
+        .frame .button.maximize {
+            color: white;
         }
     </style>
 </head>
 
 <body>
-    <div id="title-bar">
-        <div id="title" style="font-family: 'Akira';">POLAARIS</div>
-        <button id="back"><</button>
-        <div id="title-bar-btns">
-            <button id="min-btn">🗕</button>
-            <button id="max-btn">□</button>
-            <button id="close-btn">✕</button>
+    <div class="frame">
+        <div id="title" style="font-family: 'Akira';">V1.0.6</div>
+        <div class="buttons">
+            <button id="back-to-polaaris" class="button back">&lt;</button>
+            <button id="min-btn" class="button minimize">&#8211;</button>
+            <button id="max-btn" class="button maximize">&#9724;</button>
+            <button id= "close-btn" class="button close">&#10006;</button>
         </div>
     </div>
 </body>
 
 <script>
-    window.addEventListener('DOMContentLoaded', () => {
+    window.onload = () => {
         const elements = {
             minBtn: document.getElementById('min-btn'),
             maxBtn: document.getElementById('max-btn'),
             closeBtn: document.getElementById('close-btn'),
-            title: document.getElementById("back")
+            backToPolaaris: document.getElementById("back-to-polaaris")
         };
 
-        elements.title.addEventListener("click", () => {
+        elements.backToPolaaris.addEventListener("click", () => {
             api.send("back-to-polaaris")
         })
 
@@ -111,7 +111,7 @@
         elements.closeBtn.addEventListener('click', () => {
             api.send('close')
         });
-    });
+    }
 </script>
 
 </html>

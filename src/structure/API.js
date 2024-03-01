@@ -36,16 +36,16 @@ let game = "game";
 let downloading = false;
 let ETA = "00:00:00";
 let downloadSpd = 0;
-let currentUser = "placeholder"
+let account = "none"
 
 module.exports = class API {
     constructor(port) {
         this.port = port;
         this.app = express();
-        this.configString = fs.readFileSync("./config.ini").toString()
-        this.config = ini.parse(this.configString)
+        this.configString = fs.readFileSync("./config.ini").toString();
+        this.config = ini.parse(this.configString);
 
-        this.app.use(cors())
+        this.app.use(cors());
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use("/pt-BR", createProxyMiddleware("/pt-BR", {
@@ -68,56 +68,33 @@ module.exports = class API {
         this.app.post("/api/account/games", this.getAllGames.bind(this));
         this.app.post("/api/account", this.getAccount.bind(this));
         this.client = new RPC.Client({ transport: "ipc" });
-        this.clientId = "1212469859909111818"
+        this.clientId = "1212469859909111818";
     }
 
-    listenRpc() {
-        this.app.use((req, res, next) => {
-            let currentlyOn = req.originalUrl
-            let name = "Inativo";
-            let status = "Inativo";
+    async listenRpc() {
+        let request = await fetch(`http://localhost:${this.port}/api/account`, { method: "POST" })
+        let json = await request.json()
+        let client = new RPC.Client({ transport: "ipc" })
 
-            switch (currentlyOn) {
-                case "/":
-                    name = "Home";
-                    break;
-                case "/account":
-                    name = "Informações da Conta";
-                    break;
-                case "/account/games":
-                    name = "Biblioteca";
-                    break;
-                case "/account/settings":
-                    name = "Configurações";
-                    break;
-            }
-
-            if (game === "game") {
-                status = "Inativo"
-            } else {
-                name = `${game.toUpperCase()}`
-                status = `${progress}% - ${ETA}`
-            }
-
-            this.client.request("SET_ACTIVITY", {
-                pid: process.pid,
-                activity: {
-                    details: name,
-                    state: status,
-                    assets: {
-                        large_image: "polaaris",
-                        large_text: "Polaaris",
+        if (this.config.polaaris.discord_rpc) {
+            client.on("ready", () => {
+                client.request("SET_ACTIVITY", {
+                    pid: process.pid,
+                    activity: {
+                        state: json.user.account ? json.user.account : "Não autenticado",
+                        assets: {
+                            large_image: "polaaris",
+                            large_text: "Polaaris",
+                        }
                     }
-                }
+                })
             })
-            
-            if (this.config.polaaris.discord_rpc) {
-                this.client.login({ clientId: this.clientId }).catch(console.error);
-                next()
-            } else {
-                next()
-            }
-        })
+
+            client.login({ clientId: "1212469859909111818" })
+            .then(() => {
+                console.log("RPC Ready")
+            });
+        }
     }
 
     listen() {
@@ -222,6 +199,7 @@ module.exports = class API {
         child.stdout.on("data", (data) => {
             const json = JSON.parse(data)
             const filePath = path.join(json.config_directory, "/config.ini")
+            const fileJson = ini.parse(fs.readFileSync(path.join(json.config_directory, "/config.ini")).toString())
             let newConfig = ""
             newConfig += "[Legendary]\n"
             newConfig += "; Disables the automatic update check\n"
@@ -229,7 +207,7 @@ module.exports = class API {
             newConfig += "; Disables the update notice\n"
             newConfig += `disable_update_notice = ${disableUpdateNotice}\n`
             newConfig += "; Directory where games are installed\n"
-            newConfig += `install_dir = ${installationPath}`
+            newConfig += `install_dir = ${installationPath ? installationPath : fileJson.Legendary.install_dir}`
 
             fs.writeFileSync(filePath, "")
             fs.writeFileSync(filePath, newConfig)
@@ -295,16 +273,20 @@ module.exports = class API {
 
                 const getProgress = information.match(/Progress: (\d+\.\d+)%/);
                 const getETA = information.match(/ETA: (\d{2}:\d{2}:\d{2})/);
-                const getDownloadInfo = information.match(/(\d+\.\d+)/g);
+                const getDownloadsSpeed = information.match(/\+ Download\t- (\d+\.\d+) MiB\/s \(raw\)/);
 
                 if (getProgress) {
                     progress = parseFloat(getProgress[1]);
-                    game = req.params.game;
+                    game = req.params.game.toUpperCase();
                     downloading = true;
+                }
 
-                    if (getETA) {
-                        ETA = getETA[1]
-                    }
+                if (getETA) {
+                    ETA = getETA[1]
+                }
+
+                if (getDownloadsSpeed !== null) {
+                    downloadSpd = parseFloat(getDownloadsSpeed[1])
                 }
             })
 
@@ -399,8 +381,6 @@ module.exports = class API {
         })
 
         child.stdout.on("data", (data) => {
-            currentUser = JSON.parse(data.toString())
-
             res.json({ log: data.toString(), user: JSON.parse(data.toString()) })
         })
     }
