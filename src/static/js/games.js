@@ -90,18 +90,38 @@ function startDownload(game) {
     button.text("Cancelar");
     button.attr("id", "cancelDownload");
     button.addClass("cancel-button");
+    const hideButton = $("<button></button>");
+    hideButton.text("Fechar");
+    hideButton.attr("id", "hideModal");
+    hideButton.addClass("hide-button");
+    const downloadPopup = $("#downloadPopupProgress")
 
     modalContent.append(button);
+    modalContent.append(hideButton);
 
     button.on("click", () => {
+        toggleLoadingState();
         $.post("/api/epic/cancel/", (data) => {
             if (data.status === 200) {
+                toggleLoadingState();
                 modal.css("display", "none");
+                $(".install-button").removeAttr("disabled");
+                window.location.reload()
             }
         })
     })
 
     modal.css("display", "block");
+
+    hideButton.on("click", () => {
+        modal.css("display", "none");
+        downloadPopup.css("display", "flex");
+    })
+
+    downloadPopup.on("click", () => {
+        downloadPopup.css("display", "none");
+        modal.css("display", "block")
+    })
 
     const updateDownloadProgress = setInterval(() => {
         $.get("/account/downloads", (data, status) => {
@@ -113,12 +133,14 @@ function startDownload(game) {
                     etaElement.text(`Tempo estimado: ${data.ETA}`);
                     downloadElementValue.text(`100%`)
                     modal.css("display", "none");
+                    $(".install-button").removeAttr("disabled")
                 }, 4000);
                 return;
             }
 
             etaElement.text(`Tempo estimado: ${data.ETA}`);
             downloadElementValue.text(`${data.progress}%`)
+            $("#downloadPopupProgressValue").val(data.progress)
             downloadElement.val(data.progress);
             downloadSpd.text(`${data.downloadSpd} MiB/s`)
         })
@@ -146,6 +168,7 @@ function updateGameList(allGames, installedGame, showInstalled = false) {
         const gameCover = $("<img>");
         const correctImage = game.metadata.keyImages[1]
         gameCover.attr("src", correctImage.url);
+        gameCover.attr("loading", "lazy")
         const gamePlay = $("<button></button>");
         gamePlay.attr("id", game.metadata.title.toLowerCase());
         gamePlay.addClass(isInstalled ? "play-button" : "install-button");
@@ -189,6 +212,11 @@ function updateGameList(allGames, installedGame, showInstalled = false) {
     $(".install-button").on("click", (e) => {
         const game = e.target.id;
 
+        $(".install-button").attr("disabled", "disabled");
+        $('a').click((event) => {
+            event.preventDefault();
+        });
+
         startDownload(game);
 
         $.post(`/api/epic/install/${game}`, (data) => {
@@ -219,9 +247,9 @@ function updateGameList(allGames, installedGame, showInstalled = false) {
             toggleLoadingState();
 
             if (data.status === 200) {
-                $(".uninstall-button").prop("disabled");
-                $(".play-button").prop("disabled");
-                $(".open-location-button").prop("disabled");
+                $(".uninstall-button").prop("disabled", true);
+                $(".play-button").prop("disabled", true);
+                $(".open-location-button").prop("disabled", true);
                 alert('Jogo desinstalado com sucesso.');
                 location.reload();
             }

@@ -8,6 +8,8 @@
 </head>
 
 <body>
+    <div id="loading" class="active"></div>
+    <div id="loadingBackground" class="active"></div>
     <div id="modal">
         <div class="modal-content">
             <h2 id="gameName"></h2>
@@ -18,8 +20,6 @@
             <br>
         </div>
     </div>
-    <div id="loading" class="active"></div>
-    <div id="loadingBackground" class="active"></div>
     <div class="container">
         <div class="header">
             <div class="header-constant">
@@ -31,6 +31,9 @@
                 <a href="/account/games">Biblioteca</a>
                 <a href="/account/settings">Configurações</a>
                 <a href="/pt-BR">Epic Games Store</a>
+            </div>
+            <div id="downloadPopupProgress">
+                <progress id="downloadPopupProgressValue" value="0" max="100"></progress>
             </div>
             <a class="logout">Sair</a>
         </div>

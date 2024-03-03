@@ -5,11 +5,10 @@ const fs = require("fs");
 const bodyParser = require("body-parser");
 const ini = require("ini");
 const find = require('find-process');
-const kill = require('tree-kill');
+const treeKill = require('tree-kill');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const cors = require("cors");
 const RPC = require('discord-rpc');
-const axios = require("axios")
 
 const LEGENDARY = {
     SELF: "legendary",
@@ -183,7 +182,7 @@ module.exports = class API {
             }
 
             for (let proc of list) {
-                kill(proc.pid);
+                treeKill(proc.pid);
             }
             res.json({ status: 200 })
         }, (err) => {
