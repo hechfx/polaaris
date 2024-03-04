@@ -1,3 +1,8 @@
+@font-face {
+    font-family: Montserrat;
+    src: url("../asset/Montserrat.ttf");
+}
+
 :root {
     --bg-color: #ffffff;
     --text-color: black;
@@ -8,6 +13,7 @@
         --bg-color: #313338;
         --text-color: #ffffff;
     }
+
 }
 
 html,
@@ -38,6 +44,80 @@ vr {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
     font-family: Montserrat;
     font-weight: bold;
+}
+
+.header .links a {
+    text-decoration: none;
+    color: white;
+    margin-left: 6px;
+    transition: 0.3s;
+    border-radius: 12px;
+    padding: 12px 8px;
+}
+
+.header a:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.logout {
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    margin-left: auto;
+    /* Adicionado para alinhar o link à direita */
+    margin-right: 12px;
+}
+
+.header-constant {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    height: fit-content;
+    background-color: rgba(35, 36, 40, 0);
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+#header-icon {
+    width: 49px;
+    height: 49px;
+    margin-left: 12px;
+}
+
+#header-title {
+    color: white;
+    text-align: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+button {
+    padding: 12px 8px;
+    width: 100px;
+    border: none;
+    border-radius: 12px;
+    transition: 0.3s;
+    font-family: Montserrat;
+    font-weight: bold;
+}
+
+#newPath {
+    padding: 12px 8px;
+    border-radius: 12px;
+    border: none;
+}
+
+button:hover {
+    background-color: #c06ee6;
+    color: white;
+    transform: scale(1.1);
+    transition: 0.3s;
+    cursor: pointer;
 }
 
 #loading {
@@ -87,87 +167,71 @@ vr {
     }
 }
 
-.header-login {
+.switch {
+    position: relative;
     display: flex;
+    left: 47%;
+    width: 60px;
+    height: 34px;
     align-items: center;
-    height: 64px;
-    background: linear-gradient(to right, #c06ee6, #6ca0e4);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    justify-content: center;
 }
 
-.header-login .links a {
-    text-decoration: none;
-    color: white;
-    margin-left: 6px;
-    transition: 0.3s;
-    border-radius: 12px;
-    padding: 12px 8px;
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    display: none;
 }
 
-.header-login a:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    transition: 0.3s;
-}
-
-.header .links a {
-    text-decoration: none;
-    color: white;
-    margin-left: 6px;
-    transition: 0.3s;
-    border-radius: 12px;
-    padding: 12px 8px;
-}
-
-.header a:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    transition: 0.3s;
-}
-
-.logout {
-    padding: 10px 20px;
-    color: white;
-    text-decoration: none;
+.slider {
+    position: absolute;
     cursor: pointer;
-    margin-left: auto;
-    /* Adicionado para alinhar o link à direita */
-    margin-right: 12px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s
 }
 
-.header-constant {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: fit-content;
-    height: fit-content;
-    background-color: rgba(35, 36, 40, 0);
-    border-radius: 12px;
-    transition: 0.3s;
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: #fff;
+    transition: .4s
 }
 
-#header-icon {
-    width: 49px;
-    height: 49px;
-    margin-left: 12px;
+input:checked+.slider {
+    background-color: #2196F3
 }
 
-#header-title {
-    color: white;
-    text-align: center;
-    justify-content: center;
-    margin-right: 12px;
+input:checked+.slider:before {
+    transform: translateX(26px)
+}
+
+.slider.round {
+    border-radius: 34px
+}
+
+.slider.round:before {
+    border-radius: 50%
 }
 
 .content {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 50vh;
+    text-align: center;
+    height: 100%;
     width: 100%;
     flex-direction: column;
-    margin-left: 10px;
     margin-right: 10px;
+    overflow: hidden;
 }
 
 .content-constant button {
@@ -178,7 +242,7 @@ vr {
     color: white;
     font-family: Montserrat;
     font-size: 18px;
-    border: none;
+    border: none;    
     transition: 0.3s;
     align-items: center;
     justify-content: center;

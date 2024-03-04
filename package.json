@@ -1,6 +1,6 @@
 {
-  "name": "Polaaris",
-  "version": "1.0.8",
+  "name": "polaaris",
+  "version": "2.0.0",
   "description": "POLAARIS GUI for Legendary Epic Games Launcher",
   "main": "src/index.js",
   "scripts": {
@@ -16,13 +16,9 @@
     "files": [
       "src/**/*"
     ],
-    "extraFiles": [
-      "legendary.exe",
-      "config.ini"
-    ],
     "extraResources": [
       {
-        "from": "src/static/asset",
+        "from": "src/pages/static/asset",
         "to": "assets"
       }
     ],
@@ -32,7 +28,7 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "src/static/asset/Polaaris.png"
+      "icon": "src/pages/static/asset/Polaaris.png"
     }
   },
   "keywords": [
@@ -43,17 +39,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "axios": "^1.6.7",
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "discord-rpc": "^4.0.1",
-    "ejs": "^3.1.9",
-    "express": "^4.18.2",
-    "find-process": "^1.4.7",
-    "http-proxy-middleware": "^2.0.6",
-    "ini": "^4.1.1",
-    "jquery": "^3.7.1",
-    "tree-kill": "^1.2.2",
-    "windows-shortcuts": "^0.1.6"
+    "ini": "^4.1.1"
   },
   "devDependencies": {
     "electron": "^29.0.1",

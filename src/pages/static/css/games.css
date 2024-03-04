@@ -1,3 +1,32 @@
+@font-face {
+    font-family: Montserrat;
+    src: url("../asset/Montserrat.ttf");
+}
+
+/* Personaliza a barra de rolagem para todos os elementos */
+::-webkit-scrollbar {
+    width: 10px;
+    /* Largura da barra de rolagem */
+}
+
+/* Personaliza o fundo da barra de rolagem (a parte que fica atrás do "polegar") */
+::-webkit-scrollbar-track {
+    background: #313338;
+    /* Cor de fundo */
+}
+
+/* Personaliza o "polegar" da barra de rolagem (a parte que você arrasta) */
+::-webkit-scrollbar-thumb {
+    background: #6ca0e4;
+    /* Cor de fundo */
+}
+
+/* Muda a cor do "polegar" quando você passa o mouse sobre ele */
+::-webkit-scrollbar-thumb:hover {
+    background: #6ca0e4;
+    /* Cor de fundo */
+}
+
 :root {
     --bg-color: #ffffff;
     --text-color: black;
@@ -44,29 +73,6 @@ vr {
     font-weight: bold;
 }
 
-.header-login {
-    display: flex;
-    align-items: center;
-    height: 64px;
-    background: linear-gradient(to right, #c06ee6, #6ca0e4);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-}
-
-.header-login .links a {
-    text-decoration: none;
-    color: white;
-    margin-left: 6px;
-    transition: 0.3s;
-    border-radius: 12px;
-    padding: 12px 8px;
-}
-
-.header-login a:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    transition: 0.3s;
-}
-
 .header .links a {
     text-decoration: none;
     color: white;
@@ -80,6 +86,7 @@ vr {
     background-color: rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     transition: 0.3s;
+    cursor: pointer;
 }
 
 .logout {
@@ -327,6 +334,7 @@ input:checked+.slider:before {
     height: 20px;
     border-radius: 12px;
     margin-left: auto;
+    margin-right: -12px;
     display: none;
 }
 
@@ -386,8 +394,8 @@ progress[value]::-moz-progress-bar {
 
 .game-list {
     display: grid;
-    grid-template-columns: repeat(4, var(--game-width));
-    grid-template-rows: repeat(4, var(--game-height));
+    grid-template-columns: repeat(3, var(--game-width));
+    grid-template-rows: repeat(3, var(--game-height));
     justify-content: center;
     gap: 10px
 }
@@ -539,6 +547,7 @@ progress[value]::-moz-progress-bar {
     width: var(--game-width);
     height: var(--game-height);
     font-family: Montserrat;
+    border-radius: 12px;
 }
 
 .game img {
@@ -607,7 +616,7 @@ progress[value]::-moz-progress-bar {
 
 .cancel-button,
 .hide-button {
-    margin-top:10px;
+    margin-top: 10px;
     border-radius: 12px;
 }
 

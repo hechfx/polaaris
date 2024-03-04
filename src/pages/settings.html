@@ -3,9 +3,8 @@
 <html>
 
 <head>
-    <title>Polaaris</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../static/css/settings.css">
+    <link rel="stylesheet" href="./static/css/settings.css">
 </head>
 
 <body>
@@ -14,14 +13,13 @@
     <div class="container">
         <div class="header">
             <div class="header-constant">
-                <img id="header-icon" src="../static/asset/Polaaris.png" alt="Polaaris">
+                <img id="header-icon" src="./static/asset/Polaaris.png" alt="Polaaris">
             </div>
             <vr></vr>
             <div class="links">
-                <a href="/account">Início</a>
-                <a href="/account/games">Biblioteca</a>
-                <a href="/account/settings">Configurações</a>
-                <a href="/pt-BR">Epic Games Store</a>
+                <a id="go-home">Início</a>
+                <a id="go-games">Biblioteca</a>
+                <a id="go-settings">Configurações</a>
             </div>
             <a class="logout">Sair</a>
         </div>
@@ -53,7 +51,6 @@
                 <div class="setting">
                     <p><strong>Caminho de Instalação</strong>
                     <p id="currentPath"><i>
-                            <%= installationPath %>
                         </i></p><input id="newPath" placeholder="C:\Insira\O\Caminho\Aqui"></textarea>
                     </p>
 
@@ -64,7 +61,7 @@
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="../static/js/settings.js"></script>
+    <script src="./static/js/settings.js"></script>
 </body>
 
 </html>
